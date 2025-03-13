@@ -27,8 +27,8 @@ class NoteEditorViewModel(application: Application) : AndroidViewModel(applicati
 
     private val repository: TastingNoteRepository
     private var noteId: Long? = null
-    var imageUri by mutableStateOf<Uri?>(null)
-    var imagePath by mutableStateOf<String?>(null)
+    private var imageUri by mutableStateOf<Uri?>(null)
+    private var imagePath by mutableStateOf<String?>(null)
 
     // Basic info
     var name by mutableStateOf("")
@@ -273,25 +273,20 @@ class NoteEditorViewModel(application: Application) : AndroidViewModel(applicati
     /**
      * Set image URI
      */
-    //fun setImageUri(uri: Uri) {
-    //    imageUri = uri
-    //}
+    fun setImageUri(uri: Uri) {
+        imageUri = uri
+    }
 
     /**
      * Get image URI
      */
-    //fun getImageUri(): Uri? = imageUri
+    fun getImageUri(): Uri? = imageUri
 
     /**
      * Set image path
      */
-    //fun setImagePath(path: String) {
-    //    imagePath = path
-    //}
-    fun updateImageUri(uri: Uri) {
-        currentImageUri = uri
+    fun setImagePath(path: String) {
+        imagePath = path
     }
-    fun updateImagePath(path: String) {
-        currentImagePath = path
-    }
+
 }
