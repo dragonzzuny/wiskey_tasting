@@ -335,7 +335,8 @@ fun NoteDetailScreen(
                         "나무" to tastingNote.retronasalWood,
                         "기타" to tastingNote.retronasalOther
                     ),
-                    selectedAromas = tastingNote.selectedRetronasalAromas
+                    selectedAromas = tastingNote.selectedRetronasalAromas,
+                    comment = tastingNote.finishComment
                 )
 
                 Spacer(modifier = Modifier.height(16.dp))
@@ -379,24 +380,6 @@ fun NoteDetailScreen(
                         Column(
                             modifier = Modifier.padding(16.dp)
                         ) {
-                            if (tastingNote.finishComment.isNotEmpty()) {
-                                Text(
-                                    text = "피니시 / Finish",
-                                    style = MaterialTheme.typography.titleLarge,
-                                    fontWeight = FontWeight.Bold
-                                )
-
-                                Spacer(modifier = Modifier.height(8.dp))
-
-                                Text(
-                                    text = tastingNote.finishComment,
-                                    style = MaterialTheme.typography.bodyMedium
-                                )
-
-                                if (tastingNote.overallComment.isNotEmpty()) {
-                                    Divider(modifier = Modifier.padding(vertical = 16.dp))
-                                }
-                            }
 
                             if (tastingNote.overallComment.isNotEmpty()) {
                                 Text(

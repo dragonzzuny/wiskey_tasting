@@ -728,6 +728,19 @@ fun RetronasalSection(viewModel: NoteEditorViewModel) {
             }
         )
 
+        // 비후방 후각 코멘트 필드
+        OutlinedTextField(
+            value = viewModel.finishComment,  // 기존 finishComment 변수 재활용
+            onValueChange = { viewModel.finishComment = it },
+            label = { Text("비후방 후각 코멘트") },
+            modifier = Modifier.fillMaxWidth(),
+            minLines = 3,
+            keyboardOptions = KeyboardOptions(
+                imeAction = ImeAction.Next
+            )
+        )
+
+
         // Add similar selectors for other retronasal categories
         // (Code similar to AromaSection)
     }
@@ -839,4 +852,4 @@ fun CommentSection(viewModel: NoteEditorViewModel) {
     }
 }
 
-private val tabTitles = listOf("기본정보", "향", "맛", "피니시", "개성", "코멘트")
+private val tabTitles = listOf("기본정보", "향", "맛", "비후방 후각", "개성", "코멘트")
