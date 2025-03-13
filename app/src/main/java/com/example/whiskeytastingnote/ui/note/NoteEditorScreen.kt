@@ -1,6 +1,12 @@
 // app/src/main/java/com/example/whiskeytastingnote/ui/note/NoteEditorScreen.kt
 package com.example.whiskeytastingnote.ui.note
 
+
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.ui.text.input.ImeAction
+
+
 import android.content.Context
 import android.net.Uri
 import android.widget.Toast
@@ -83,14 +89,14 @@ fun NoteEditorScreen(
         contract = ActivityResultContracts.GetContent()
     ) { uri: Uri? ->
         uri?.let {
-            viewModel.setImageUri(it)
+            viewModel.imageUri = it
             // Load the image from URI
             CoroutineScope(Dispatchers.Main).launch {
                 ImageUtils.getBitmapFromUri(context, it)?.let { bitmap ->
                     val compressedBitmap = ImageUtils.compressBitmap(bitmap)
                     val file = ImageUtils.createImageFile(context)
                     ImageUtils.saveBitmapToFile(compressedBitmap, file)
-                    viewModel.setImagePath(file.absolutePath)
+                    viewModel.imagePath = file.absolutePath
                 }
             }
         }
@@ -101,8 +107,8 @@ fun NoteEditorScreen(
         contract = ActivityResultContracts.TakePicture()
     ) { success ->
         if (success) {
-            viewModel.getImageUri()?.let { uri ->
-                viewModel.setImageUri(uri)
+            viewModel.imageUri?.let { uri ->
+                viewModel.imageUri = uri
             }
         }
     }
@@ -197,8 +203,8 @@ fun NoteEditorScreen(
                             // Create a temporary file and URI for camera
                             val file = ImageUtils.createImageFile(context)
                             val uri = ImageUtils.getUriForFile(context, file)
-                            viewModel.setImagePath(file.absolutePath)
-                            viewModel.setImageUri(uri)
+                            viewModel.imagePath = file.absolutePath
+                            viewModel.imageUri = uri
                             cameraLauncher.launch(uri)
                         }
                     )
@@ -229,7 +235,10 @@ fun BasicInfoSection(
             value = viewModel.name,
             onValueChange = { viewModel.name = it },
             label = { Text("위스키 이름") },
-            modifier = Modifier.fillMaxWidth()
+            modifier = Modifier.fillMaxWidth(),
+            keyboardOptions = KeyboardOptions(
+                imeAction = ImeAction.Next
+            )
         )
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -254,7 +263,7 @@ fun BasicInfoSection(
 
         // Image uploader
         ImageUploader(
-            currentImageUri = viewModel.getImageUri(),
+            currentImageUri = viewModel.imageUri,
             onGalleryClick = onImagePickerClick,
             onCameraClick = onCameraClick
         )
@@ -659,6 +668,66 @@ fun RetronasalSection(viewModel: NoteEditorViewModel) {
             }
         )
 
+        AromaSelector(
+            category = "피트",
+            value = viewModel.retronasalPeat,
+            onValueChange = { viewModel.retronasalPeat = it },
+            selectedAromas = viewModel.selectedRetronasalAromas,
+            onAromaToggle = { category, subCategory, aroma ->
+                viewModel.toggleRetronasalAroma(category, subCategory, aroma)
+            }
+        )
+
+        AromaSelector(
+            category = "곡물",
+            value = viewModel.retronasalGrain,
+            onValueChange = { viewModel.retronasalGrain = it },
+            selectedAromas = viewModel.selectedRetronasalAromas,
+            onAromaToggle = { category, subCategory, aroma ->
+                viewModel.toggleRetronasalAroma(category, subCategory, aroma)
+            }
+        )
+
+        AromaSelector(
+            category = "꽃",
+            value = viewModel.retronasalFloral,
+            onValueChange = { viewModel.retronasalFloral = it },
+            selectedAromas = viewModel.selectedRetronasalAromas,
+            onAromaToggle = { category, subCategory, aroma ->
+                viewModel.toggleRetronasalAroma(category, subCategory, aroma)
+            }
+        )
+
+        AromaSelector(
+            category = "과일",
+            value = viewModel.retronasalFruit,
+            onValueChange = { viewModel.retronasalFruit = it },
+            selectedAromas = viewModel.selectedRetronasalAromas,
+            onAromaToggle = { category, subCategory, aroma ->
+                viewModel.toggleRetronasalAroma(category, subCategory, aroma)
+            }
+        )
+
+        AromaSelector(
+            category = "나무",
+            value = viewModel.retronasalWood,
+            onValueChange = { viewModel.retronasalWood = it },
+            selectedAromas = viewModel.selectedRetronasalAromas,
+            onAromaToggle = { category, subCategory, aroma ->
+                viewModel.toggleRetronasalAroma(category, subCategory, aroma)
+            }
+        )
+
+        AromaSelector(
+            category = "기타",
+            value = viewModel.retronasalOther,
+            onValueChange = { viewModel.retronasalOther = it },
+            selectedAromas = viewModel.selectedRetronasalAromas,
+            onAromaToggle = { category, subCategory, aroma ->
+                viewModel.toggleRetronasalAroma(category, subCategory, aroma)
+            }
+        )
+
         // Add similar selectors for other retronasal categories
         // (Code similar to AromaSection)
     }
@@ -719,7 +788,11 @@ fun CommentSection(viewModel: NoteEditorViewModel) {
             onValueChange = { viewModel.noseComment = it },
             label = { Text("향 코멘트") },
             modifier = Modifier.fillMaxWidth(),
-            minLines = 3
+            minLines = 3,
+            keyboardOptions = KeyboardOptions(
+                imeAction = ImeAction.Next
+            )
+
         )
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -730,7 +803,10 @@ fun CommentSection(viewModel: NoteEditorViewModel) {
             onValueChange = { viewModel.palateComment = it },
             label = { Text("맛 코멘트") },
             modifier = Modifier.fillMaxWidth(),
-            minLines = 3
+            minLines = 3,
+            keyboardOptions = KeyboardOptions(
+                imeAction = ImeAction.Next
+            )
         )
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -741,7 +817,10 @@ fun CommentSection(viewModel: NoteEditorViewModel) {
             onValueChange = { viewModel.finishComment = it },
             label = { Text("피니시 코멘트") },
             modifier = Modifier.fillMaxWidth(),
-            minLines = 3
+            minLines = 3,
+            keyboardOptions = KeyboardOptions(
+                imeAction = ImeAction.Next
+            )
         )
 
         Spacer(modifier = Modifier.height(16.dp))
@@ -752,9 +831,12 @@ fun CommentSection(viewModel: NoteEditorViewModel) {
             onValueChange = { viewModel.overallComment = it },
             label = { Text("총평") },
             modifier = Modifier.fillMaxWidth(),
-            minLines = 4
+            minLines = 4,
+            keyboardOptions = KeyboardOptions(
+                imeAction = ImeAction.Next
+            )
         )
     }
 }
 
-private val tabTitles = listOf("기본정보", "향", "맛", "레트로나절", "개성", "코멘트")
+private val tabTitles = listOf("기본정보", "향", "맛", "피니시", "개성", "코멘트")

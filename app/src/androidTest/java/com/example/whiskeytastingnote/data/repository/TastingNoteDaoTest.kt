@@ -1,9 +1,9 @@
 package com.example.whiskeytastingnote.data.repository
-
+import java.util.Date
 data class TastingNote(
     val id: Long = 0,
     val name: String = "",
-    val date: LocalDate = LocalDate.now(),
+    val date: Date = Date(),
     val abv: Float? = null,
     val score: Int? = null,
     val color: Float = 1.4f,
