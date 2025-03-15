@@ -2,6 +2,9 @@
 package com.example.whiskeytastingnote.ui.home
 
 import android.app.Application
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.whiskeytastingnote.WhiskeyTastingApp
@@ -24,6 +27,11 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
     private val _isOnline = MutableStateFlow(NetworkUtils.isNetworkAvailable(application))
     val isOnline: StateFlow<Boolean> = _isOnline
 
+    // 검색 관련 변수
+    var searchQuery by mutableStateOf("")
+    private val _searchResults = MutableStateFlow<List<TastingNote>>(emptyList())
+    val searchResults: StateFlow<List<TastingNote>> = _searchResults
+
     init {
         val tastingApp = application as WhiskeyTastingApp
         repository = tastingApp.repository
@@ -39,6 +47,22 @@ class HomeViewModel(application: Application) : AndroidViewModel(application) {
     fun deleteNote(note: TastingNote) {
         viewModelScope.launch {
             repository.delete(note)
+        }
+    }
+
+    /**
+     * Search for notes by query string
+     */
+    fun search(query: String) {
+        searchQuery = query
+        viewModelScope.launch {
+            if (query.isBlank()) {
+                _searchResults.value = emptyList()
+            } else {
+                repository.searchNotes(query).collect {
+                    _searchResults.value = it
+                }
+            }
         }
     }
 

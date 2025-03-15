@@ -22,6 +22,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Edit
+import androidx.compose.material.icons.filled.Save
 import androidx.compose.material.icons.filled.Share
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -98,36 +99,19 @@ fun NoteDetailScreen(
                     }
                 },
                 actions = {
+                    // 이미지 저장 버튼 추가
                     IconButton(onClick = {
-                        // Share note as image
-                        note?.let { tastingNote ->
-                            CoroutineScope(Dispatchers.Main).launch {
-                                // In a real app, this would generate an image of the note
-                                // and share it using the intent system
+                        viewModel.generateAndShareImage(context, saveOnly = true)
+                    }) {
+                        Icon(
+                            imageVector = Icons.Default.Save,
+                            contentDescription = "이미지 저장"
+                        )
+                    }
 
-                                // For now, just share text
-                                val shareIntent = Intent(Intent.ACTION_SEND).apply {
-                                    type = "text/plain"
-                                    putExtra(Intent.EXTRA_SUBJECT, "위스키 테이스팅 노트: ${tastingNote.name}")
-                                    putExtra(Intent.EXTRA_TEXT,
-                                        """
-                                        위스키 테이스팅 노트
-                                        
-                                        이름: ${tastingNote.name}
-                                        날짜: ${DateUtils.formatDate(tastingNote.date)}
-                                        ABV: ${tastingNote.abv}
-                                        점수: ${tastingNote.score}
-                                        
-                                        향 코멘트: ${tastingNote.noseComment}
-                                        맛 코멘트: ${tastingNote.palateComment}
-                                        피니시 코멘트: ${tastingNote.finishComment}
-                                        총평: ${tastingNote.overallComment}
-                                        """.trimIndent()
-                                    )
-                                }
-                                context.startActivity(Intent.createChooser(shareIntent, "테이스팅 노트 공유"))
-                            }
-                        }
+                    // 공유 버튼
+                    IconButton(onClick = {
+                        viewModel.generateAndShareImage(context)
                     }) {
                         Icon(
                             imageVector = Icons.Default.Share,
@@ -136,7 +120,6 @@ fun NoteDetailScreen(
                     }
 
                     IconButton(onClick = {
-                        // Show delete confirmation
                         viewModel.showDeleteConfirmation()
                     }) {
                         Icon(
@@ -371,8 +354,8 @@ fun NoteDetailScreen(
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                // Finish and overall comments
-                if (tastingNote.finishComment.isNotEmpty() || tastingNote.overallComment.isNotEmpty()) {
+                // 총평만 표시하는 카드
+                if (tastingNote.overallComment.isNotEmpty()) {
                     Card(
                         modifier = Modifier.fillMaxWidth(),
                         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
@@ -380,21 +363,18 @@ fun NoteDetailScreen(
                         Column(
                             modifier = Modifier.padding(16.dp)
                         ) {
+                            Text(
+                                text = "총평 / Overall",
+                                style = MaterialTheme.typography.titleLarge,
+                                fontWeight = FontWeight.Bold
+                            )
 
-                            if (tastingNote.overallComment.isNotEmpty()) {
-                                Text(
-                                    text = "총평 / Overall",
-                                    style = MaterialTheme.typography.titleLarge,
-                                    fontWeight = FontWeight.Bold
-                                )
+                            Spacer(modifier = Modifier.height(8.dp))
 
-                                Spacer(modifier = Modifier.height(8.dp))
-
-                                Text(
-                                    text = tastingNote.overallComment,
-                                    style = MaterialTheme.typography.bodyMedium
-                                )
-                            }
+                            Text(
+                                text = tastingNote.overallComment,
+                                style = MaterialTheme.typography.bodyMedium
+                            )
                         }
                     }
                 }

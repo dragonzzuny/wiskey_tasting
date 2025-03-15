@@ -37,4 +37,8 @@ interface TastingNoteDao {
 
     @Query("DELETE FROM tasting_notes")
     suspend fun deleteAll()
+
+    // 다음 메소드 추가
+    @Query("SELECT * FROM tasting_notes WHERE name LIKE '%' || :query || '%' OR noseComment LIKE '%' || :query || '%' OR palateComment LIKE '%' || :query || '%' OR finishComment LIKE '%' || :query || '%' OR overallComment LIKE '%' || :query || '%'")
+    fun searchNotes(query: String): Flow<List<TastingNote>>
 }

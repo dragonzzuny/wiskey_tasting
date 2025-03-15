@@ -44,4 +44,9 @@ class TastingNoteRepository(private val tastingNoteDao: TastingNoteDao) {
         val syncedNote = tastingNote.copy(isSynced = true, lastModified = Date())
         tastingNoteDao.update(syncedNote)
     }
+
+
+    fun searchNotes(query: String): Flow<List<TastingNote>> {
+        return tastingNoteDao.searchNotes(query)
+    }
 }

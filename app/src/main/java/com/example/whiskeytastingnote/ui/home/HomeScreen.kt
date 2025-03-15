@@ -21,6 +21,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Divider
@@ -29,6 +30,7 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
@@ -60,6 +62,7 @@ fun HomeScreen(
 ) {
     val notes by viewModel.notes.collectAsState(initial = emptyList())
     val isOnline by viewModel.isOnline.collectAsState(initial = true)
+    val searchResults by viewModel.searchResults.collectAsState(initial = emptyList())
 
     Scaffold(
         topBar = {
@@ -119,15 +122,59 @@ fun HomeScreen(
             }
         }
     ) { padding ->
-        if (notes.isEmpty()) {
-            EmptyState(modifier = Modifier.padding(padding))
-        } else {
-            NotesList(
-                notes = notes,
-                onNoteClick = onNoteClick,
-                onDeleteClick = { viewModel.deleteNote(it) },
-                modifier = Modifier.padding(padding)
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(padding)
+        ) {
+            // 검색 필드 추가
+            OutlinedTextField(
+                value = viewModel.searchQuery,
+                onValueChange = { viewModel.search(it) },
+                placeholder = { Text("위스키 이름 또는 코멘트로 검색") },
+                leadingIcon = {
+                    Icon(
+                        imageVector = Icons.Default.Search,
+                        contentDescription = "검색"
+                    )
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(horizontal = 16.dp, vertical = 8.dp)
             )
+
+            // 검색 결과에 따라 표시할 노트 목록 결정
+            val notesToDisplay = if (viewModel.searchQuery.isBlank()) {
+                notes
+            } else {
+                searchResults
+            }
+
+            if (notesToDisplay.isEmpty()) {
+                if (viewModel.searchQuery.isBlank() && notes.isEmpty()) {
+                    // 노트가 하나도 없는 경우
+                    EmptyState()
+                } else {
+                    // 검색 결과가 없는 경우
+                    Column(
+                        modifier = Modifier.fillMaxSize(),
+                        horizontalAlignment = Alignment.CenterHorizontally,
+                        verticalArrangement = Arrangement.Center
+                    ) {
+                        Text(
+                            text = "'${viewModel.searchQuery}'에 대한 검색 결과가 없습니다",
+                            style = MaterialTheme.typography.bodyLarge
+                        )
+                    }
+                }
+            } else {
+                // 노트 목록 표시
+                NotesList(
+                    notes = notesToDisplay,
+                    onNoteClick = onNoteClick,
+                    onDeleteClick = { viewModel.deleteNote(it) }
+                )
+            }
         }
     }
 }
